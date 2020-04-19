@@ -1,0 +1,13 @@
+body {
+    background-color: black;
+    text-align: center;
+    color: white;
+}
+.authors{
+    text-align: left;
+    display: table;
+}
+.container{
+    display: block;
+    float: top;
+}

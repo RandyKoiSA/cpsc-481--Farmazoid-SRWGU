@@ -1,7 +1,7 @@
 class Cell{
     constructor(traversable, tileType, row, col) {
         this.traversable = traversable;
-        this.type = tileType;
+        this.tileType = tileType;
         this.row = row;
         this.col = col;
     }
@@ -80,7 +80,7 @@ let path = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -100,8 +100,7 @@ let path = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
-// Setup
-grid = new Grid(num_rows, num_cols, path);
+let grid = new Grid(num_rows, num_cols, path);
 
 // Sets up the parameters and logic
 function setup() {
@@ -111,34 +110,35 @@ function setup() {
     // Colors
     outline_color = color(255, 255, 255); // white
     mine_area_color = color(0, 0, 0); // black
-    grass_color = color(0, 0, 255); // green
+    grass_color = color(19, 133, 16); // green
     river_color = color(0, 0, 255); //blue
-    bridge_color = color(156, 156, 156);
-    barn_color = color(10, 10, 10);
+    bridge_color = color(136, 140, 141); // stone gray
+    barn_color = color(101, 67, 33); // dark brown
     error_color = color(255, 0, 0);
+
 
     // Draw the grid
     stroke(outline_color); // set outlines to white
     for(row = 0; row < num_rows; row++) {
         for(col = 0; col < num_cols; col++) {
-            current_cell = grid.contents[row][col]
-            if(current_cell.type == 0) {
+            current_cell = grid.contents[row][col];
+            if(current_cell.tileType == 0) {
                 fill(grass_color);
                 square(col*cell_size, row*cell_size, cell_size);
             }
-            if(current_cell.type == 1) {
+            if(current_cell.tileType == 1) {
                 fill(barn_color);
                 square(col*cell_size, row*cell_size, cell_size);
             }
-            if(current_cell.type == 2) {
+            if(current_cell.tileType == 2) {
                 fill(river_color);
                 square(col*cell_size, row*cell_size, cell_size);
             }
-            if(current_cell.type == 3) {
+            if(current_cell.tileType == 3) {
                 fill(bridge_color);
                 square(col*cell_size, row*cell_size, cell_size);
             }
-            if(current_cell.type == 4) {
+            if(current_cell.tileType == 4) {
                 fill(mine_area_color);
                 square(col*cell_size, row*cell_size, cell_size);
             } 

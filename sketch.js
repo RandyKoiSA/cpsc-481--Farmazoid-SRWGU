@@ -89,6 +89,7 @@ class Grid {
                 {
                     this.contents[row][col] = new Cell(false, "mine", row, col);
                 }
+                // Tile where the farmzoid will initially start.
                 else if(path[row][col] == 5)
                 {
                     this.contents[row][col] = new Cell(true, "grass", row, col);
@@ -110,6 +111,8 @@ let cell_size = 20;
 var barn;
 var plants = [];
 var farmzoids = [];
+let num_of_moves = 40;
+var days = 0;
 
 // Grass = 0, Barn = 1, River = 2, Bridge = 3, Mine = 4, Farmzoid = 5
 let path = [
@@ -155,7 +158,9 @@ let path = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
+// Generate the grid and spawn in farmzoids.
 let grid = new Grid(num_rows, num_cols, path);
+
 
 
 // Sets up the parameters and logic

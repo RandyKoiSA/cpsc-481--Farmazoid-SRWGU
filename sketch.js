@@ -224,3 +224,22 @@ function draw() {
         circle(col*cell_size+(cell_size/2), (row*cell_size)+(cell_size/2), cell_size);
     }
 } 
+
+function MoveFarmzoids()
+{
+    for(i = 0; i < farmzoids.length; i++)
+    {
+        // D-TREE logic can go here
+        // Check farmzoids surroundings
+        // Depending on what farmzoid is carrying it will find the plant that needs attention.
+    }
+}
+
+/*
+Move each farmzoids (x40)
+if moved 40 times:
+    increment the day
+    change weather type
+    depending on weather type update the plants status
+    reset the move amount
+*/

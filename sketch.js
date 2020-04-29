@@ -66,33 +66,33 @@ class Grid {
                 // Tile is grass
                 if(path[row][col] == 0) 
                 {
-                    this.contents[row][col] = new Cell(true, "grass", row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col);
                 } 
                 // Tile is a barn
                 else if(path[row][col] == 1)
                 {
                     barn = new Barn(row, col);
-                    this.contents[row][col] = new Cell(true, "barn", row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Barn, row, col);
                 }
                 // Tile is a river
                 else if(path[row][col] == 2) 
                 { 
-                    this.contents[row][col] = new Cell(false, "river", row, col);
+                    this.contents[row][col] = new Cell(false, cellType.River, row, col);
                 }
                 // Tile is a bridge
                 else if(path[row][col] == 3)
                 {
-                    this.contents[row][col] = new Cell(true, "bridge", row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Bridge, row, col);
                 }
                 // Tile is a mine
                 else if(path[row][col] == 4)
                 {
-                    this.contents[row][col] = new Cell(false, "mine", row, col);
+                    this.contents[row][col] = new Cell(false, cellType.Mine, row, col);
                 }
                 // Tile where the farmzoid will initially start.
-                else if(path[row][col] == 5)
+                else if(path[row][col] == cellType.Farmzoid)
                 {
-                    this.contents[row][col] = new Cell(true, "grass", row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col);
                     farmzoids.push(new Farmzoid(row, col));
                 }
             }
@@ -103,6 +103,16 @@ class Grid {
 /*
     Variable Initialization
 */
+
+const cellType = {
+    Grass: 0,
+    Barn: 1,
+    River: 2,
+    Bridge: 3,
+    Mine: 4,
+    Farmzoid: 5
+};
+
 // Dimmensions
 let num_rows = 40;
 let num_cols = 40;
@@ -111,8 +121,8 @@ let cell_size = 20;
 var barn;
 var plants = [];
 var farmzoids = [];
-let num_of_moves = 40;
-var days = 0;
+var move_counter = 0;
+var day_counter = 0;
 
 // Grass = 0, Barn = 1, River = 2, Bridge = 3, Mine = 4, Farmzoid = 5
 let path = [
@@ -158,16 +168,14 @@ let path = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
-// Generate the grid and spawn in farmzoids.
 let grid = new Grid(num_rows, num_cols, path);
-
 
 
 // Sets up the parameters and logic
 function setup() {
+    print("Set up is only called once");
     createCanvas(num_cols*cell_size, num_rows*cell_size);
     frameRate(3);
-
     // Colors
     outline_color = color(255, 255, 255); // white
     mine_area_color = color(0, 0, 0); // black
@@ -177,54 +185,37 @@ function setup() {
     barn_color = color(101, 67, 33); // dark brown
     error_color = color(255, 0, 0);
     farmzoid_color = color(255, 255, 255); // white
+}
 
-    // Draw the grid
-    stroke(outline_color); // set outlines to white
-    for(row = 0; row < num_rows; row++) {
-        for(col = 0; col < num_cols; col++) {
-            current_cell = grid.contents[row][col];
-            if(current_cell.tileType == "grass") {
-                fill(grass_color);
-                square(col*cell_size, row*cell_size, cell_size);
-            }
-            if(current_cell.tileType == "barn") {
-                fill(barn_color);
-                barn = new Barn();
-                square(col*cell_size, row*cell_size, cell_size);
-            }
-            if(current_cell.tileType == "river") {
-                fill(river_color);
-                square(col*cell_size, row*cell_size, cell_size);
-            }
-            if(current_cell.tileType == "bridge") {
-                fill(bridge_color);
-                square(col*cell_size, row*cell_size, cell_size);
-            }
-            if(current_cell.tileType == "mine") {
-                fill(mine_area_color);
-                square(col*cell_size, row*cell_size, cell_size);
-            } 
-        }
+function draw() { 
+    background(0);
+    // Draw the Grid: River, Grass, Bridge, Barn, Mine
+    DrawGrid();
+    CheckIfNewDay();
+    // draw farmzoid
+    MoveFarmzoids();
+    DrawFarmzoids();
+
+    move_counter += 1;
+
+} 
+
+function CheckIfNewDay()
+{
+    if(move_counter >= 40)
+    {
+        day_counter += 1;
+        move_counter = 0;
+        ChangeWeather();
     }
 }
 
-// Grass = 0
-// Barn = 1
-// River = 2
-// Bridge = 3
-// Mine-Area = 4
-// Everything in draw() strictly relates to graphics, not logic
-function draw() { 
-    // draw farmzoid
-    stroke((0, 0, 0));
-    for(i = 0; i < farmzoids.length; i++){
-        fill(farmzoid_color);
-        col = farmzoids[i].col;
-        row = farmzoids[i].row;
-        circle(col*cell_size+(cell_size/2), (row*cell_size)+(cell_size/2), cell_size);
-    }
-} 
+/* Place to randomize weather conditions */
+function ChangeWeather()
+{
 
+}
+/* Move Farmzoids will hold D-TREE logic */
 function MoveFarmzoids()
 {
     for(i = 0; i < farmzoids.length; i++)
@@ -232,6 +223,52 @@ function MoveFarmzoids()
         // D-TREE logic can go here
         // Check farmzoids surroundings
         // Depending on what farmzoid is carrying it will find the plant that needs attention.
+        farmzoids[i].col += 1;
+    }
+}
+
+/* Draw all the Farmzoids on the Canvas */
+function DrawFarmzoids()
+{
+    stroke(0);
+    for(i = 0; i < farmzoids.length; i++){
+        fill(farmzoid_color);
+        col = farmzoids[i].col;
+        row = farmzoids[i].row;
+        circle(col*cell_size+(cell_size/2), (row*cell_size)+(cell_size/2), cell_size);
+    }
+}
+
+/* Draw the Grass, River, Bridges, Mines, and Barn */
+function DrawGrid()
+{
+    // Draw the grid
+    stroke(outline_color); // set outlines to white
+    for(row = 0; row < num_rows; row++) {
+        for(col = 0; col < num_cols; col++) {
+            current_cell = grid.contents[row][col];
+            if(current_cell.tileType == cellType.Grass) {
+                fill(grass_color);
+                square(col*cell_size, row*cell_size, cell_size);
+            }
+            if(current_cell.tileType == cellType.Barn) {
+                fill(barn_color);
+                barn = new Barn();
+                square(col*cell_size, row*cell_size, cell_size);
+            }
+            if(current_cell.tileType == cellType.River) {
+                fill(river_color);
+                square(col*cell_size, row*cell_size, cell_size);
+            }
+            if(current_cell.tileType == cellType.Bridge) {
+                fill(bridge_color);
+                square(col*cell_size, row*cell_size, cell_size);
+            }
+            if(current_cell.tileType == cellType.Mine) {
+                fill(mine_area_color);
+                square(col*cell_size, row*cell_size, cell_size);
+            } 
+        }
     }
 }
 

@@ -235,10 +235,12 @@ function ChangeWeather()
             console.log('Rainy day');
             rainy = true;
             for(plant of plants) {
+                // Increase water
                 plant.water_reserve = plant.water_reserve + 1;
             }
         } else {
             for(plant of plants) {
+                // No rain, decrease water
                 plant.water_reserve = plant.water_reserve - 1;
             }
         }
@@ -271,6 +273,7 @@ function ChangeWeather()
         }
     }
 
+    // Blight
     for(plant of plants) {
         if(Math.random < 0.02) {
             // Plant is blighted
@@ -305,6 +308,7 @@ function ChangeWeather()
         wind_direction = '';
     }
 }
+
 /* Move Farmzoids will hold D-TREE logic */
 function MoveFarmzoids()
 {

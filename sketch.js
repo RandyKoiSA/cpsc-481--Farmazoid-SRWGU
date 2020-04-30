@@ -12,6 +12,9 @@ class Plant{
         this.plant_state = "green";
         this.fruit_state = "seed";
         this.water_reserve = 0;
+        this.blight = false;
+        this.protected_from_cold = false;
+        this.cold_issues = false;
     }
 
 }
@@ -123,6 +126,11 @@ var plants = [];
 var farmzoids = [];
 var move_counter = 0;
 var day_counter = 0;
+var windy = false;
+var wind_direction = ''; // N, S, E, or W
+var rainy = false
+var cloudy = false;
+var cold_snap = 0; // days remaning in cold snap, 0 for no current cold snap
 
 // Grass = 0, Barn = 1, River = 2, Bridge = 3, Mine = 4, Farmzoid = 5
 let path = [
@@ -213,7 +221,89 @@ function CheckIfNewDay()
 /* Place to randomize weather conditions */
 function ChangeWeather()
 {
+    var yesterday_cloudy = cloudy;
+    var yesterday_rainy = rainy;
 
+    // Check weather
+    if(Math.random() < 0.1) {
+        // Cloudy day
+        console.log('Cloudy day');
+        cloudy = true;
+        rainy = false;
+        if(Math.random() < 0.5) {
+            // Rainy day
+            console.log('Rainy day');
+            rainy = true;
+            for(plant of plants) {
+                plant.water_reserve = plant.water_reserve + 1;
+            }
+        } else {
+            for(plant of plants) {
+                plant.water_reserve = plant.water_reserve - 1;
+            }
+        }
+    } else {
+        cloudy = false;
+        rainy = false;
+    }
+
+    // Cold snap effects
+    if(cold_snap > 0) {
+        for(plant of plants) {
+            if(!plant.protected_from_cold) {
+                plant.cold_issues = true;
+            }
+        }
+
+        cold_snap = cold_snap - 1;
+    } else {
+        for(plant of plants) {
+            plant.cold_issues = false;
+        }
+    }
+
+    // Cold snap initiation
+    if(yesterday_cloudy || yesterday_rainy) {
+        if(Math.random() < 0.5) {
+            // Cold snap
+            console.log('Cold snap start');
+            cold_snap = 2;
+        }
+    }
+
+    for(plant of plants) {
+        if(Math.random < 0.02) {
+            // Plant is blighted
+            plant.blight = true;
+        }
+    }
+
+    // Wind
+    if(Math.random() < 0.3) {
+        // Windy day
+        windy = true;
+        var wind_direction = Math.random();
+        if(wind_direction < 0.25) {
+            // North
+            console.log('Windy day, N');
+            wind_direction = 'N';
+        } else if(wind_direction < 0.5) {
+            // South
+            console.log('Windy day, S');
+            wind_direction = 'S';
+        } else if(wind_direction < 0.75) {
+            // East
+            console.log('Windy day, E');
+            wind_direction = 'E';
+        } else {
+            // West
+            console.log('Windy day, W');
+            wind_direction = 'W';
+        }
+    } else {
+        windy = false;
+        wind_direction = '';
+    }
 }
 /* Move Farmzoids will hold D-TREE logic */
 function MoveFarmzoids()

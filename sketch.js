@@ -41,17 +41,18 @@ class Barn{
 }
 
 class Farmzoid{
-    constructor(row, col, carried_supplied){
+    constructor(row, col, carried_supply){
         this.row = row;
         this.col = col;
-        this.carried_supplied = carried_supplied;
+        this.carried_supply = carried_supply;
     }
 }
 
 // Used to add into the Grid
 class Cell{
-    constructor(traversable, tileType, row, col) {
+    constructor(traversable, tileType, row, col, plantable) {
         this.traversable = traversable;
+        this.plantable = plantable;
         this.tileType = tileType;
         this.row = row;
         this.col = col;
@@ -71,34 +72,34 @@ class Grid {
                 // Tile is grass
                 if(path[row][col] == 0) 
                 {
-                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col, true);
                 } 
                 // Tile is a barn
                 else if(path[row][col] == 1)
                 {
                     barn = new Barn(row, col);
-                    this.contents[row][col] = new Cell(true, cellType.Barn, row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Barn, row, col, false);
                 }
                 // Tile is a river
                 else if(path[row][col] == 2) 
                 { 
-                    this.contents[row][col] = new Cell(false, cellType.River, row, col);
+                    this.contents[row][col] = new Cell(false, cellType.River, row, col, false);
                 }
                 // Tile is a bridge
                 else if(path[row][col] == 3)
                 {
-                    this.contents[row][col] = new Cell(true, cellType.Bridge, row, col);
+                    this.contents[row][col] = new Cell(true, cellType.Bridge, row, col, false);
                 }
                 // Tile is a mine
                 else if(path[row][col] == 4)
                 {
-                    this.contents[row][col] = new Cell(false, cellType.Mine, row, col);
+                    this.contents[row][col] = new Cell(false, cellType.Mine, row, col, false);
                 }
                 // Tile where the farmzoid will initially start.
-                else if(path[row][col] == cellType.Farmzoid)
+                else if(path[row][col] == 5)
                 {
-                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col);
-                    farmzoids.push(new Farmzoid(row, col));
+                    this.contents[row][col] = new Cell(true, cellType.Grass, row, col, true);
+                    farmzoids.push(new Farmzoid(row, col, carriedSupply.SEED));
                 }
             }
         }
@@ -125,10 +126,18 @@ const plantType = {
 }
 
 const plantState = {
-    Flowering: "flowering",
-    Green: "green",
-    Red: "red",
-    NONE: "none"
+    Flowering: 1,
+    Green: 2,
+    Red: 3,
+    NONE: 0
+}
+
+const carriedSupply = {
+    SEED: "seed",
+    FERTILIZER: "fertilizer",
+    SMUDGEPOTS: "smudge_pots",
+    SOAP: "soap",
+    WATER: "water"
 }
 
 
@@ -176,19 +185,19 @@ let path = [
     [0, 0, 0, 0, 0, 5, 0, 5, 0, 5, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
@@ -224,7 +233,9 @@ function draw() {
     DrawPlants();
     /* Ideally, Nature, FSM, then zoids run */
     CheckIfNewDay();
+
     /* Draw farm zoids */
+    ActionFarmzoid();
     MoveFarmzoids();
     DrawFarmzoids();
 
@@ -238,7 +249,7 @@ function CheckIfNewDay()
         day_counter += 1;
         move_counter = 0;
         ChangeWeather();
-        Run_FMS();
+        RunFMS();
     }
 }
 
@@ -336,8 +347,117 @@ function ChangeWeather()
 /* This will check what state the weather it is in. FMS can learn
 what plant needs by running a decision tree, to classify the plant's current needs. The classification
 should then be used to run a rule to determine what tasks need to be done for that plant */
-function Run_FMS()
+function RunFMS()
 {
+
+}
+
+/* 
+This function attempts to find an avaiable spot to plant a seed.
+Plant Seed disable the current cell from being tranversable and disable the 8 cells around it to be unplantable */
+function PlantSeed(row, col)
+{
+    random_num = random(1, 9);
+    random_num = floor(random_num);
+    print(random_num);
+    // Check farmzoids surroundings
+    bPlantSeed = false;
+    try{
+        print("trying to find plantable spot");
+        if(random_num == 1 && grid.contents[row-1][col-1].plantable) //top left
+        {
+            print("1");
+            row = row-1;
+            col = col-1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 2 && grid.contents[row-1][col].plantable) //top
+        {
+            print("2");
+            row = row-1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 3 && grid.contents[row-1][col+1].plantable) // top right
+        {
+            print("3");
+            row = row-1;
+            col = col+1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 4 && grid.contents[row][col-1].plantable) // left
+        {
+            print("4");
+            col = col-1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 5 && grid.contents[row][col+1].plantable) //right
+        {
+            print("5");
+            col = col+1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 6 && grid.contents[row+1][col-1].plantable) //bottom left
+        {
+            print("6");
+            row = row+1;
+            col = col-1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 7 && grid.contents[row+1][col].plantable) //bottom
+        {
+            print("7");
+            row = row+1;
+            bPlantSeed = true;
+        }
+        else if(random_num == 8 && grid.contents[row+1][col+1].plantable) // bottom right
+        {
+            print("8");
+            row = row+1;
+            col = col+1;
+            bPlantSeed = true;
+        }
+        else{
+            print("failed to plant")
+        }
+    }catch(err){
+        print("error finding plot");
+    }
+
+    if(bPlantSeed)
+    {
+        print("planting seed at row: " + row + "column: " + col);
+        plants.push(new Plant(row, col));
+        /* disable the plot as not traversable */
+        grid.contents[row][col].traversable = false;
+        /* disable the surrounded cells as unplantable */
+        try{
+            grid.contents[row - 1][col - 1].plantable = false; // top left disabled
+        }catch(err){}
+        try{
+            grid.contents[row - 1][col + 1].plantable = false; // top right disable
+        }catch(err){}
+        try{
+            grid.contents[row - 1][col].plantable = false; // top
+        }catch(err){}
+        try{
+            grid.contents[row][col - 1].plantable = false; // left disabled
+        }catch(err){}
+        try{
+            grid.contents[row][col].plantable = false; //middle disabled
+        }catch(err){}
+        try{
+            grid.contents[row][col + 1].plantable = false; //right disabled
+        }catch(err){}
+        try{
+            grid.contents[row + 1][col - 1].plantable = false; //bottom left disabled
+        }catch(err){}
+        try{
+            grid.contents[row + 1][col].plantable = false; //bottom disabled
+        }catch(err){}
+        try{
+            grid.contents[row + 1][col + 1].plantable = false; //bottom right disabled
+        }catch(err){}
+    }
 
 }
 /* Move Farmzoids will hold D-TREE logic */
@@ -345,14 +465,74 @@ function MoveFarmzoids()
 {
     for(i = 0; i < farmzoids.length; i++)
     {
-        // D-TREE logic can go here
+        row = farmzoids[i].row;
+        col = farmzoids[i].col;
+        // have the bot move randomly
+        random_num = Math.random()
         // Check farmzoids surroundings
-        switch(farmzoids[i].carried_supplied)
-        {
-            case carriedSp
+        try{
+            if(random_num <= 0.1 && grid.contents[row-1][col-1].traversable && row > 0 && col > 0) //top left
+            {
+                farmzoids[i].row = row-1;
+                farmzoids[i].col = col-1;
+            }
+            else if(random_num <= 0.2 && grid.contents[row-1][col].traversable && row > 0) //top
+            {
+                farmzoids[i].row = row-1;
+            }
+            else if(random_num <= 0.3 && grid.contents[row-1][col+1].traversable && row > 0 && col < 39) // top right
+            {
+                farmzoids[i].row = row-1;
+                farmzoids[i].col = col+1;
+            }
+            else if(random_num <= 0.4 && grid.contents[row][col-1].traversable && col > 0) // left
+            {
+                farmzoids[i].col = col-1;
+            }
+            else if(random_num <= 0.5 && grid.contents[row][col+1].traversable && col < 39) //right
+            {
+                farmzoids[i].col = col+1;
+            }
+            else if(random_num <= 0.6 && grid.contents[row+1][col-1].traversable && col > 0 && row < 39) //bottom left
+            {
+                farmzoids[i].row = row+1;
+                farmzoids[i].col = col-1;
+            }
+            else if(random_num <= 0.7 && grid.contents[row+1][col].traversable && row < 39) //bottom
+            {
+                farmzoids[i].row = row+1;
+            }
+            else if(random_num <= 0.8 && grid.contents[row+1][col+1].traversable && row < 39 && col < 39) // bottom right
+            {
+                farmzoids[i].row = row+1;
+                farmzoids[i].col = col+1;
+            }
+        }catch(err){
+            print("farmazoid tried to go out of bound of grid");
         }
-        // Depending on what farmzoid is carrying it will find the plant that needs attention.
-        farmzoids[i].col += 1;
+    }
+}
+
+function ActionFarmzoid()
+{
+    for(i = 0; i < farmzoids.length; i++)
+    {
+        row = farmzoids[i].row;
+        col = farmzoids[i].col;
+        switch(farmzoids[i].carried_supply)
+        {
+            case carriedSupply.SEED:
+                PlantSeed(row, col);
+                break;
+            case carriedSupply.WATER:
+                break;
+            case carriedSupply.FERTILIZER:
+                break;
+            case carriedSupply.SMUDGEPOTS:
+                break;
+            case carriedSupply.SOAP:
+                break;
+        }
     }
 }
 

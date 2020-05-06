@@ -11,6 +11,7 @@ class Plant{
         //assuming there is only one fruit type to make it easier
         this.plant_type = plant_type;
         this.plant_state = plantState.Flowering;
+        this.plant_color = green_plant_color;
         this.water_reserve = 0;
         this.blight = false;
         this.protected_from_cold = false;
@@ -242,6 +243,13 @@ function setup() {
     red_plant_color = color (255, 0, 0);
     none_plant_color = color(0, 0, 0);
 
+    // colors for new day plants
+    //green_plant_color = color(32, 183, 31);
+    yellow_plant_color = color(241, 245, 39);
+    brown_plant_color = color(97, 69, 25);
+    dead_plant_color = color(43, 42, 39);
+    //
+
     temp_plant = new Plant(5, 5);
     plants.push(temp_plant);
 }
@@ -266,8 +274,10 @@ function CheckIfNewDay()
     if(move_counter >= 40)
     {
         dayCount.innerText = "Day " + day_counter
+        isNewDay = true;
         day_counter += 1;
         move_counter = 0;
+        checkForDyingPlants();
         ChangeWeather();
         RunFMS();
     }
@@ -388,6 +398,41 @@ function RunFMS()
 
 }
 
+function checkForDyingPlants(){
+    for(i = 0; i < plants.length; i++){
+        if (plants[i].plant_color == green_plant_color){
+            if (plants[i].water_reserve == 0){
+                plants[i].plant_color = yellow_plant_color;
+            }
+        }
+        else if (plants[i].plant_color == yellow_plant_color){
+            if (plants[i].water_reserve == 0){
+                plants[i].plant_color = brown_plant_color;
+            }
+            else if (plants[i].water_reserve >= 2){
+                plants[i].plant_color = green_plant_color;
+                plants[i].water_reserve = plants[i].water_reserve - 2;
+            }
+        }
+        else if (plants[i].plant_color == brown_plant_color){
+            if (plants[i].water_reserve == 0){
+                plants[i].plant_color = dead_plant_color;
+            }
+            else if (plants[i].water_reserve >= 2){
+                plants[i].plant_color = yellow_plant_color;
+                plants[i].water_reserve = plants[i].water_reserve - 2;
+            }
+        }
+        else if (plants[i].plant_color == dead_plant_color){
+            // dead
+        }
+        else if (plants[i].water_reserve > 3){
+            // straw
+        }
+        
+    }
+}
+
 /* 
 This function attempts to find an avaiable spot to plant a seed.
 Plant Seed disable the current cell from being tranversable and disable the 8 cells around it to be unplantable */
@@ -461,7 +506,7 @@ function PlantSeed(row, col)
 
     if(bPlantSeed)
     {
-        print("planting seed at row: " + row + "column: " + col);
+        print("planting seed at row: " + row + " column: " + col);
         plants.push(new Plant(row, col));
         /* disable the plot as not traversable */
         grid.contents[row][col].traversable = false;
@@ -496,6 +541,21 @@ function PlantSeed(row, col)
     }
 
 }
+
+function waterPlant(row, col){
+    for(i = 0; i < plants.length; i++){
+        if (plants[i].row == row && plants[i].col == col){
+            console.log("watering plant at row: " + row + " column: " + col);
+            if (plants[i].water_reserve == 0){
+                plants[i].water_reserve = 2;
+            }
+            else if (plants[i].water_reserve >= 1 && plants[i].water_reserve <= 2){
+                plants[i].water_reserve++;
+            }
+        }
+    }
+}
+
 /* Move Farmzoids will hold D-TREE logic */
 function MoveFarmzoids()
 {
@@ -561,6 +621,7 @@ function ActionFarmzoid()
                 PlantSeed(row, col);
                 break;
             case carriedSupply.WATER:
+                //waterPlant(row, col);
                 break;
             case carriedSupply.FERTILIZER:
                 break;
@@ -591,21 +652,9 @@ function DrawPlants()
     {
         col = plants[i].col;
         row = plants[i].row;
-        switch(plants[i].plant_state)
-        {
-            case plantState.Flowering:
-                fill(flowering_color);
-                break;
-            case plantState.Green:
-                fill(green_plant_color);
-                break;
-            case plantState.Red:
-                fill(red_plant_color);
-                break;
-            case plantState.NONE:
-                fill(none_plant_color);
-                break;
-        }
+
+        fill(plants[i].plant_color);
+
         circle(col*cell_size+(cell_size/2), (row*cell_size)+(cell_size/2), cell_size);    
     }
 }

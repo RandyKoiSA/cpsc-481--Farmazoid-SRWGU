@@ -41,10 +41,16 @@ class Barn{
 }
 
 class Farmzoid{
-    constructor(row, col, carried_supply){
+    constructor(row, col, carried_supply, grid){
         this.row = row;
         this.col = col;
         this.carried_supply = carried_supply;
+
+        // pathfinding variables
+        this.goal_row = row;
+        this.goal_col = col;
+        this.open_list = [grid.contents[this.row][this.col]]; // a list of cells
+        this.closed_list = []; // a list of cells
     }
 }
 
@@ -99,7 +105,7 @@ class Grid {
                 else if(path[row][col] == 5)
                 {
                     this.contents[row][col] = new Cell(true, cellType.Grass, row, col, true);
-                    farmzoids.push(new Farmzoid(row, col, carriedSupply.SEED));
+                    farmzoids.push(new Farmzoid(row, col, carriedSupply.SEED, this));
                 }
             }
         }
@@ -605,4 +611,68 @@ function DrawGrid()
             } 
         }
     }
+}
+
+/* Pathfinding code */
+// This function carries out one iteration of bestFS
+function BestFSOneIteration(open, closed, grid, goal_row, goal_col) {
+    cell = open.pop();
+    neighbors = GenerateCellNeighbors(cell, grid);
+
+    for(neighbor of neighbors) {
+        in_open = open_list.includes(neighbor);
+        in_closed = closed_list.includes(neighbor);
+        reached_by_shorter_path = neighbor.shortest_path.length < cell.shortest_path.length - 1;
+
+        if(!in_open && !in_closed) {// cell is unvisited
+            neighbor.heuristic = ManhattanHeuristic(neighbor, grid, goal_row, goal_col);
+            neighbor.shortest_path = cell.shortest_path.slice();
+            neighbor.shortest_path.push(neighbor);
+            open.push(neighbor);
+        } else if (in_open && reached_by_shorter_path) { // shortcut discovered
+            open.shortest_path = neighbor.shortest_path.slice();
+            open.shortest_path.push(open);
+        } else if (in_closed && reached_by_shorter_path) { // an old cell can get us here faster
+            closed.splice(closed.indexOf(neighbor, 1));
+            open.push(neighbor);
+        }
+    }
+
+    closed.push(cell);
+
+    open.sort(function(a,b) {return b.heuristic - a.heuristic});
+}
+
+function GenerateCellNeighbors(cell, grid) {
+    neighbors = [];
+    
+    // left
+    if(cell.col != 0 && grid.contents[cell.row][cell.col-1].traversable) {
+        neighbors.push(grid.contents[cell.row][cell.col-1]);
+    }
+
+    // right
+    if(cell.col != grid.cols-1 && grid.contents[cell.row][cell.col+1].traversable) {
+        neighbors.push(grid.contents[cell.row][cell.col+1]);
+    }
+
+    // up
+    if(cell.row != 0 && grid.contents[cell.row-1][cell.col].traversable) {
+        neighbors.push(grid.contents[cell.row-1][cell.col]);
+    }
+
+    // down
+    if(cell.row != grid.rows-1 && grid.contents[cell.row+1][cell.col].traversable) {
+        neighbors.push(grid.contents[cell.row+1][cell.col]);
+    }
+
+    return neighbors;
+}
+
+// A simple heuristic. Not the most optimal, but it works
+function ManhattanHeuristic(cell, goal_row, goal_col) {
+    row_difference = Math.abs(cell.row - goal_row);
+    col_difference = Math.abs(cell.col - goal_col);
+
+    return row_difference + col_difference;
 }

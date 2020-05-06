@@ -45,12 +45,26 @@ class Farmzoid{
         this.row = row;
         this.col = col;
         this.carried_supply = carried_supply;
+        this.grid = grid;
 
         // pathfinding variables
         this.goal_row = row;
         this.goal_col = col;
         this.open_list = [grid.contents[this.row][this.col]]; // a list of cells
         this.closed_list = []; // a list of cells
+    }
+
+    set_pathfinding_target(row, col) {
+        this.goal_row = row;
+        this.goal_col = col;
+        this.open_list = [grid.contents[this.row][this.col]];
+        this.closed_list = []; // a list of cells
+    }
+
+    pathfinding_move_one() {
+        BestFSOneIteration(this.open_list, this.closed_list, this.grid, this.goal_row, this.goal_col);
+        this.col = open_list[open_list.length - 1].col;
+        this.row = open_list[open_list.length - 1].row;
     }
 }
 

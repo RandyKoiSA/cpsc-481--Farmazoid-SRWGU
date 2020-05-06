@@ -258,7 +258,6 @@ function draw() {
     ActionFarmzoid();
     MoveFarmzoids();
     DrawFarmzoids();
-
     move_counter += 1;
 } 
 
@@ -266,6 +265,7 @@ function CheckIfNewDay()
 {
     if(move_counter >= 40)
     {
+        dayCount.innerText = "Day " + day_counter
         day_counter += 1;
         move_counter = 0;
         ChangeWeather();
@@ -276,6 +276,8 @@ function CheckIfNewDay()
 /* Place to randomize weather conditions */
 function ChangeWeather()
 {
+    // used to show weather in html, adds all weather conditions for that day
+    var weatherAnnouncement = '';
     var yesterday_cloudy = cloudy;
     var yesterday_rainy = rainy;
 
@@ -283,11 +285,13 @@ function ChangeWeather()
     if(Math.random() < 0.1) {
         // Cloudy day
         console.log('Cloudy day');
+        weatherAnnouncement += "Cloudy "
         cloudy = true;
         rainy = false;
         if(Math.random() < 0.5) {
             // Rainy day
             console.log('Rainy day');
+            weatherAnnouncement += "Rainy "
             rainy = true;
             for(plant of plants) {
                 // Increase water
@@ -324,6 +328,7 @@ function ChangeWeather()
         if(Math.random() < 0.5) {
             // Cold snap
             console.log('Cold snap start');
+            weatherAnnouncement += "Cold snap start "
             cold_snap = 2;
         }
     }
@@ -344,24 +349,35 @@ function ChangeWeather()
         if(wind_direction < 0.25) {
             // North
             console.log('Windy day, N');
+            weatherAnnouncement += "Windy (N) "
             wind_direction = 'N';
         } else if(wind_direction < 0.5) {
             // South
             console.log('Windy day, S');
+            weatherAnnouncement += "Windy (S) "
             wind_direction = 'S';
         } else if(wind_direction < 0.75) {
             // East
             console.log('Windy day, E');
+            weatherAnnouncement += "Windy (E) "
             wind_direction = 'E';
         } else {
             // West
             console.log('Windy day, W');
+            weatherAnnouncement += "Windy (W) "
             wind_direction = 'W';
         }
     } else {
         windy = false;
         wind_direction = '';
     }
+
+    // shows 'clear' if other weather conditions don't come up
+    if (weatherAnnouncement == ''){
+        weatherAnnouncement = "Clear"
+    }
+
+    currWeather.innerText = "Current Weather Conditions: " + weatherAnnouncement
 }
 
 /* This will check what state the weather it is in. FMS can learn

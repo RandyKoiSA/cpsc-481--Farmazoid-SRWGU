@@ -1,0 +1,9 @@
+The top todo list is high priority as others can be done later.
+
+* Revise MoveFarmzoids: instead of moving randomly within the 8 cells, we use the pathfinder in project one to find plants that needs help based on the carried_supply variable in farmzoid.
+
+* function SmudgepotPlantsAroundFarmzoids(row, col) line ~813 must be implemented. Need a way to display and remove it when necessary.
+
+* FMS function can be refined for better decision making
+
+* Need to have farmzoid remove dead plants.

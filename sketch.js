@@ -738,20 +738,6 @@ function PlantSeed(row, col)
 
 }
 
-function waterPlant(row, col){
-    for(i = 0; i < plants.length; i++){
-        if (plants[i].row == row && plants[i].col == col){
-            console.log("watering plant at row: " + row + " column: " + col);
-            if (plants[i].water_reserve == 0){
-                plants[i].water_reserve = 2;
-            }
-            else if (plants[i].water_reserve >= 1 && plants[i].water_reserve <= 2){
-                plants[i].water_reserve++;
-            }
-        }
-    }
-}
-
 function WaterPlantsAroundFarmzoid(row, col)
 {
     for(i = 0; i < plants.length; i++){

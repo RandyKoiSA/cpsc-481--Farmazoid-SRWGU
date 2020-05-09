@@ -170,7 +170,7 @@ let cell_size = 20;
 
 var barn;
 var plants = [];
-var max_plants = 20; // determine how many plants that can be placed onto the farm for maintainability
+var max_plants = 100; // determine how many plants that can be placed onto the farm for maintainability
 var farmzoids = [];
 var move_counter = 0;
 var day_counter = 0;

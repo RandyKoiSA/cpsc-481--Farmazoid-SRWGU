@@ -1,5 +1,5 @@
 CPSC 481-05
-Project 1: BestFS
+Project 2: Farmazoid
 Team Name: SRWGU
 Team Members:
 	Sean MacLane
